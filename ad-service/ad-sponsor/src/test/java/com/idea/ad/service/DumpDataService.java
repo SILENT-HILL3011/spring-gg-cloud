@@ -1,0 +1,223 @@
+package com.idea.ad.service;
+
+import com.alibaba.fastjson.JSON;
+import com.idea.ad.Application;
+import com.idea.ad.constant.CommonStatus;
+import com.idea.ad.dao.AdPlanRepository;
+import com.idea.ad.dao.AdUnitRepository;
+import com.idea.ad.dao.CreativeRepository;
+import com.idea.ad.dao.unit_condition.AdUnitDistrictRepository;
+import com.idea.ad.dao.unit_condition.AdUnitItRepository;
+import com.idea.ad.dao.unit_condition.AdUnitKeywordRepository;
+import com.idea.ad.dao.unit_condition.CreativeUnitRepository;
+import com.idea.ad.dump.DConstant;
+import com.idea.ad.dump.table.*;
+import com.idea.ad.entity.ADPlan;
+import com.idea.ad.entity.AdUnit;
+import com.idea.ad.entity.Creative;
+import com.idea.ad.entity.unit_condition.ADUnitKeyWord;
+import com.idea.ad.entity.unit_condition.AdUnitDistrict;
+import com.idea.ad.entity.unit_condition.AdUnitIt;
+import com.idea.ad.entity.unit_condition.CreativeUnit;
+import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = {Application.class}
+        ,webEnvironment = SpringBootTest.WebEnvironment.NONE)
+public class DumpDataService {
+    private static final Logger log = LoggerFactory.getLogger(DumpDataService.class);
+    @Autowired
+    private AdPlanRepository planRepository;
+    @Autowired
+    private AdUnitRepository unitRepository;
+    @Autowired
+    private CreativeRepository creativeRepository;
+    @Autowired
+    private CreativeUnitRepository creativeUnitRepository;
+    @Autowired
+    private AdUnitDistrictRepository districtRepository;
+    @Autowired
+    private AdUnitItRepository itRepository;
+    @Autowired
+    private AdUnitKeywordRepository keywordRepository;
+
+    @Transactional
+    public void dumpAdTableData() {
+        dumpAdPlanTable(String.format("%s%s", DConstant.DATA_ROOT_DIR, DConstant.AD_PLAN));
+        dumpAdUnitTable(String.format("%s%s", DConstant.DATA_ROOT_DIR, DConstant.AD_UNIT));
+        dumpCreativeTable(String.format("%s%s", DConstant.DATA_ROOT_DIR, DConstant.AD_CREATIVE));
+        dumpCreativeUnitTable(String.format("%s%s", DConstant.DATA_ROOT_DIR, DConstant.AD_CREATIVE_UNIT));
+        dumpAdUnitDistrictTable(String.format("%s%s", DConstant.DATA_ROOT_DIR, DConstant.AD_UNIT_DISTRICT));
+        dumpAdUnitItTable(String.format("%s%s", DConstant.DATA_ROOT_DIR, DConstant.AD_UNIT_IT));
+        dumpAdUnitKeywordTable(String.format("%s%s", DConstant.DATA_ROOT_DIR, DConstant.AD_UNIT_KEYWORD));
+
+    }
+
+    private void dumpAdPlanTable(String fileName) {
+        List<ADPlan> adPlans = planRepository.findAllByPlanStatus(CommonStatus.VALID.getStatus());
+        if (CollectionUtils.isEmpty(adPlans)){
+            return;
+        }
+        List<AdPlanTable> planTables = new ArrayList<>();
+        adPlans.forEach(p->planTables.add(new AdPlanTable(
+                p.getId(),
+                p.getUserId(),
+                p.getPlanStatus(),
+                p.getStartDate(),
+                p.getEndDate()
+        )));
+        Path path = Paths.get(fileName);
+        try (BufferedWriter writer = Files.newBufferedWriter(path)){
+            for (AdPlanTable planTable : planTables) {
+                writer.write(JSON.toJSONString(planTable));
+                writer.newLine();
+            }
+        }catch (IOException e){
+            log.error("dumpAdPlanTable error");
+        }
+    }
+    private void dumpAdUnitTable(String fileName) {
+        List<AdUnit> adUnits = unitRepository.findAllByUnitStatus(CommonStatus.VALID.getStatus());
+        if (CollectionUtils.isEmpty(adUnits)){
+            return;
+        }
+        List<AdUnitTable> unitTables = new ArrayList<>();
+        adUnits.forEach(u->unitTables.add(new AdUnitTable(
+                u.getId(),
+                u.getUnitStatus(),
+                u.getPositionType(),
+                u.getPlanId()
+        )));
+        Path path = Paths.get(fileName);
+        try (BufferedWriter writer = Files.newBufferedWriter(path)){
+            for (AdUnitTable unitTable : unitTables) {
+                writer.write(JSON.toJSONString(unitTable));
+                writer.newLine();
+            }
+        }catch (IOException e){
+            log.error("dumpAdUnitTable error");
+        }
+    }
+    private void dumpCreativeTable(String fileName) {
+        List<Creative> creatives = creativeRepository.findAll();
+        if (CollectionUtils.isEmpty(creatives)){
+            return;
+        }
+        List<AdCreativeTable> creativeTables = new ArrayList<>();
+        creatives.forEach(c->creativeTables.add(new AdCreativeTable(
+                c.getId(),
+                c.getName(),
+                c.getType(),
+                c.getMaterialType(),
+                c.getHeight(),
+                c.getWidth(),
+                c.getAuditStatus(),
+                c.getUrl()
+        )));
+        Path path = Paths.get(fileName);
+        try (BufferedWriter writer = Files.newBufferedWriter(path)){
+            for (AdCreativeTable creativeTable : creativeTables) {
+                writer.write(JSON.toJSONString(creativeTable));
+                writer.newLine();
+            }
+        }catch (IOException e){
+            log.error("dumpCreativeTable error");
+        }
+    }
+    private void dumpCreativeUnitTable(String fileName) {
+        List<CreativeUnit> creativeUnits = creativeUnitRepository.findAll();
+        if (CollectionUtils.isEmpty(creativeUnits)){
+            return;
+        }
+        List<AdCreativeUnitTable> creativeUnitTables = new ArrayList<>();
+        creativeUnits.forEach(c->creativeUnitTables.add(new AdCreativeUnitTable(
+                c.getCreativeId(),
+                c.getUnitId()
+        )));
+        Path path = Paths.get(fileName);
+        try (BufferedWriter writer = Files.newBufferedWriter(path)){
+            for (AdCreativeUnitTable creativeUnitTable : creativeUnitTables) {
+                writer.write(JSON.toJSONString(creativeUnitTable));
+                writer.newLine();
+            }
+        }catch (IOException e){
+            log.error("dumpCreativeUnitTable error");
+        }
+    }
+    private void dumpAdUnitDistrictTable(String fileName) {
+        List<AdUnitDistrict> adUnitDistricts = districtRepository.findAll();
+        if (CollectionUtils.isEmpty(adUnitDistricts)){
+            return;
+        }
+        List<AdUnitDistrictTable> districtTables = new ArrayList<>();
+        adUnitDistricts.forEach(d->districtTables.add(new AdUnitDistrictTable(
+                d.getUnitId(),
+                d.getProvince(),
+                d.getCity()
+        )));
+        Path path = Paths.get(fileName);
+        try (BufferedWriter writer = Files.newBufferedWriter(path)){
+            for (AdUnitDistrictTable districtTable : districtTables) {
+                writer.write(JSON.toJSONString(districtTable));
+                writer.newLine();
+            }
+        }catch (IOException e){
+            log.error("dumpAdUnitDistrictTable error");
+        }
+    }
+    private void dumpAdUnitItTable(String fileName) {
+        List<AdUnitIt> adUnitIts = itRepository.findAll();
+        if (CollectionUtils.isEmpty(adUnitIts)){
+            return;
+        }
+        List<AdUnitItTable> itTables = new ArrayList<>();
+        adUnitIts.forEach(i->itTables.add(new AdUnitItTable(
+                i.getUnitId(),
+                i.getItTag()
+        )));
+        Path path = Paths.get(fileName);
+        try (BufferedWriter writer = Files.newBufferedWriter(path)){
+            for (AdUnitItTable itTable : itTables) {
+                writer.write(JSON.toJSONString(itTable));
+                writer.newLine();
+            }
+        }catch (IOException e){
+            log.error("dumpAdUnitItTable error");
+        }
+    }
+    private void dumpAdUnitKeywordTable(String fileName) {
+        List<ADUnitKeyWord> adUnitKeyWords = keywordRepository.findAll();
+        if (CollectionUtils.isEmpty(adUnitKeyWords)){
+            return;
+        }
+        List<AdUnitKeywordTable> keywordTables = new ArrayList<>();
+        adUnitKeyWords.forEach(k->keywordTables.add(new AdUnitKeywordTable(
+                k.getUnitId(),
+                k.getKeyword()
+        )));
+        Path path = Paths.get(fileName);
+        try (BufferedWriter writer = Files.newBufferedWriter(path)){
+            for (AdUnitKeywordTable keywordTable : keywordTables) {
+                writer.write(JSON.toJSONString(keywordTable));
+                writer.newLine();
+            }
+        }catch (IOException e){
+            log.error("dumpAdUnitKeywordTable error");
+        }
+    }
+}

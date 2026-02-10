@@ -12,8 +12,8 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 @Slf4j
 @Component
-public class CreateUnitIndex implements IndexAware<String,CreateUnitObject> {
-    private static Map<String,CreateUnitObject> objectMap;
+public class CreativeUnitIndex implements IndexAware<String, CreativeUnitObject> {
+    private static Map<String, CreativeUnitObject> objectMap;
     private static Map<Long, Set<Long>> creativeUnitMap;
     private static Map<Long, Set<Long>> unitCreativeMap;
     static {
@@ -22,12 +22,12 @@ public class CreateUnitIndex implements IndexAware<String,CreateUnitObject> {
         unitCreativeMap = new ConcurrentHashMap<>();
     }
     @Override
-    public CreateUnitObject get(String key) {
+    public CreativeUnitObject get(String key) {
         return objectMap.get(key);
     }
 
     @Override
-    public void add(String key, CreateUnitObject value) {
+    public void add(String key, CreativeUnitObject value) {
         log.info("before add: {}", objectMap);
 
         objectMap.put(key, value);
@@ -50,12 +50,12 @@ public class CreateUnitIndex implements IndexAware<String,CreateUnitObject> {
     }
 
     @Override
-    public void update(String key, CreateUnitObject value) {
+    public void update(String key, CreativeUnitObject value) {
         log.error("CreativeUnitIndex not support update");
     }
 
     @Override
-    public void delete(String key, CreateUnitObject value) {
+    public void delete(String key, CreativeUnitObject value) {
         log.info("before delete: {}",objectMap);
         objectMap.remove(key);
         Set<Long> unitIds = creativeUnitMap.get(value.getAdId());
