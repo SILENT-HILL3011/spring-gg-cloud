@@ -11,4 +11,8 @@ public interface IAdUnitService {
     AdUnitItResponse createUnitIt(AdUnitItRequest request)throws ADException;
 
     AdUnitDistrictResponse createUnitDistrict(AdUnitDistrictRequest request)throws ADException;
+
+    CreativeUnitResponse createCreativeUnit(CreativeUnitRequest request)throws ADException;
+
+
 }

@@ -3,14 +3,17 @@ package com.idea.ad.service.impl;
 import com.idea.ad.constant.Constants;
 import com.idea.ad.dao.AdPlanRepository;
 import com.idea.ad.dao.AdUnitRepository;
+import com.idea.ad.dao.CreativeRepository;
 import com.idea.ad.dao.unit_condition.AdUnitDistrictRepository;
 import com.idea.ad.dao.unit_condition.AdUnitItRepository;
 import com.idea.ad.dao.unit_condition.AdUnitKeywordRepository;
+import com.idea.ad.dao.unit_condition.CreativeUnitRepository;
 import com.idea.ad.entity.ADPlan;
 import com.idea.ad.entity.AdUnit;
 import com.idea.ad.entity.unit_condition.ADUnitKeyWord;
 import com.idea.ad.entity.unit_condition.AdUnitDistrict;
 import com.idea.ad.entity.unit_condition.AdUnitIt;
+import com.idea.ad.entity.unit_condition.CreativeUnit;
 import com.idea.ad.exception.ADException;
 import com.idea.ad.service.IAdUnitService;
 import com.idea.ad.vo.*;
@@ -28,13 +31,17 @@ public class AdUnitServiceImpl implements IAdUnitService {
     private final AdUnitKeywordRepository adUnitKeywordRepository;
     private final AdUnitItRepository adUnitItRepository;
     private final AdUnitDistrictRepository adUnitDistrictRepository;
+    private final CreativeRepository creativeRepository;
+    private final CreativeUnitRepository creativeUnitRepository;
     @Autowired
-    public AdUnitServiceImpl(AdPlanRepository adPlanRepository, AdUnitRepository adUnitRepository, AdUnitKeywordRepository adUnitKeywordRepository, AdUnitItRepository adUnitItRepository, AdUnitDistrictRepository adUnitDistrictRepository) {
+    public AdUnitServiceImpl(AdPlanRepository adPlanRepository, AdUnitRepository adUnitRepository, AdUnitKeywordRepository adUnitKeywordRepository, AdUnitItRepository adUnitItRepository, AdUnitDistrictRepository adUnitDistrictRepository, CreativeRepository creativeRepository, CreativeUnitRepository creativeUnitRepository) {
         this.adPlanRepository = adPlanRepository;
         this.adUnitRepository = adUnitRepository;
         this.adUnitKeywordRepository = adUnitKeywordRepository;
         this.adUnitItRepository = adUnitItRepository;
         this.adUnitDistrictRepository = adUnitDistrictRepository;
+        this.creativeRepository = creativeRepository;
+        this.creativeUnitRepository = creativeUnitRepository;
     }
 
     @Override
@@ -106,11 +113,40 @@ public class AdUnitServiceImpl implements IAdUnitService {
                  .stream().map(AdUnitDistrict::getId).collect(Collectors.toList());
         return new AdUnitDistrictResponse(ids);
     }
+
+    @Override
+    public CreativeUnitResponse createCreativeUnit(CreativeUnitRequest request) throws ADException {
+        List<Long> unitIds = request.getUnitItems().stream()
+                .map(CreativeUnitRequest.CreativeUnitItem::getUnitId)
+                .collect(Collectors.toList());
+        List<Long> creativeIds = request.getUnitItems().stream()
+                .map(CreativeUnitRequest.CreativeUnitItem::getCreativeId)
+                .collect(Collectors.toList());
+        if (!(isRelatedUnitExist(unitIds)&&isRelatedUnitExist(creativeIds))){
+            throw new ADException(Constants.ErrorMsg.REQUEST_PARAM_ERROR);
+        }
+        List<CreativeUnit> creativeUnits = new ArrayList<>();
+        request.getUnitItems().forEach(i->creativeUnits.add(
+                new CreativeUnit(i.getCreativeId(),i.getUnitId())
+        ));
+        List<Long> ids = creativeUnitRepository.saveAll(creativeUnits)
+                .stream().map(CreativeUnit::getId)
+                .collect(Collectors.toList());
+        return new CreativeUnitResponse(ids);
+    }
+
     private boolean isRelatedUnitExist(List<Long> unitIds){
         if (CollectionUtils.isEmpty(unitIds)){
             return false;
         }
         return adUnitRepository.findAllById(unitIds).size() ==
                 new HashSet<>(unitIds).size();
+    }
+    private boolean insRelatedCreativeExist(List<Long> creativeIds){
+        if (CollectionUtils.isEmpty(creativeIds)){
+            return false;
+        }
+        return creativeRepository.findAllById(creativeIds).size() ==
+                new HashSet<>(creativeIds).size();
     }
 }
