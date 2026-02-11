@@ -37,6 +37,6 @@ public class SearchController {
     public R<List<AdPlan>> getAdPlansByRibbon(@RequestBody AdPlanGetRequest request){
         log.info("ad-search: getAdPlanByRibbon->{}", JSON.toJSONString(request));
         return restTemplate.postForEntity("http://eureka-client-ad-sponsor/ad-sponsor/get/adPlan",
-                request,R.class).getBody();
+                request, R.class).getBody();
     }
 }
