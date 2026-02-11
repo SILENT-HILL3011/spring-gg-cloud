@@ -20,7 +20,7 @@ import java.util.Map;
 @Slf4j
 @Component
 public class IncrementListener implements IListener{
-    @Resource(name = "")
+    @Resource(name = "indexSender")
     private ISender sender;
     private final AggregationListener aggregationListener;
     @Autowired
