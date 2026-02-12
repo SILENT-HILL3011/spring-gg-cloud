@@ -1,4 +1,4 @@
-package com.idea.ad.index.creatice;
+package com.idea.ad.index.creative;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

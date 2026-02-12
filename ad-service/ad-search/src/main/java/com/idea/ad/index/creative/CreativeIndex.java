@@ -1,10 +1,11 @@
-package com.idea.ad.index.creatice;
+package com.idea.ad.index.creative;
 
 import com.idea.ad.index.IndexAware;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
@@ -13,6 +14,21 @@ public class CreativeIndex implements IndexAware<Long, CreativeObject> {
     private static Map<Long, CreativeObject> objectMap;
     static {
         objectMap = new ConcurrentHashMap<>();
+    }
+    public List<CreativeObject> fetch(Collection<Long> adIds){
+        if (CollectionUtils.isEmpty(adIds)){
+            return Collections.emptyList();
+        }
+        List<CreativeObject> result = new ArrayList<>();
+        adIds.forEach(a ->{
+            CreativeObject object = get(a);
+            if (null == object){
+                log.error("creative not found for key: {}",a);
+                return;
+            }
+            result.add(object);
+        });
+        return result;
     }
     @Override
     public CreativeObject get(Long key) {

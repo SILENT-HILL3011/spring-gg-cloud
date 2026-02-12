@@ -1,6 +1,6 @@
 package com.idea.ad.search.vo;
 
-import com.idea.ad.index.creatice.CreativeObject;
+import com.idea.ad.index.creative.CreativeObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
