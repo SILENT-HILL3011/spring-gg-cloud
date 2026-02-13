@@ -14,6 +14,7 @@
         <module>ad-gateway</module>
         <module>ad-service</module>
         <module>ad-service/ad-dashboard</module>
+        <module>extra-ad</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

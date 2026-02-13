@@ -15,7 +15,7 @@ import com.idea.ad.index.creativeunit.CreativeUnitObject;
 import com.idea.ad.index.district.UnitDistrictIndex;
 import com.idea.ad.index.interest.UnitItIndex;
 import com.idea.ad.index.keyword.UnitKeywordIndex;
-import com.idea.ad.mysql.constant.OpType;
+import com.idea.ad.constant.OpType;
 import com.idea.ad.utils.CommonUtils;
 import lombok.extern.slf4j.Slf4j;
 

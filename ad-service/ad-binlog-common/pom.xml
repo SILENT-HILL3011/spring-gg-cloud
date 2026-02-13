@@ -5,25 +5,23 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.idea</groupId>
-        <artifactId>silent-hill-ad-spring-cloud</artifactId>
+        <artifactId>ad-service</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>ad-service</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>ad-common</module>
-        <module>ad-sponsor</module>
-        <module>ad-search</module>
-        <module>ad-binlog-common</module>
-        <module>ad-binlog-kafka</module>
-    </modules>
+    <artifactId>ad-binlog-common</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
+    <dependencies>
+        <dependency>
+            <groupId>com.zendesk</groupId>
+            <artifactId>mysql-binlog-connector-java</artifactId>
+            <version>0.30.3</version>
+        </dependency>
+    </dependencies>
 
 </project>

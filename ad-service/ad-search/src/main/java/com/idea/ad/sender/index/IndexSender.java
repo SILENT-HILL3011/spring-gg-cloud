@@ -5,8 +5,8 @@ import com.idea.ad.client.vo.AdPlan;
 import com.idea.ad.dump.table.*;
 import com.idea.ad.handler.AdLevelDataHandler;
 import com.idea.ad.index.DataLevel;
-import com.idea.ad.mysql.constant.Constant;
-import com.idea.ad.mysql.dto.MysqlRowData;
+import com.idea.ad.constant.Constant;
+import com.idea.ad.dto.MysqlRowData;
 import com.idea.ad.sender.ISender;
 import com.idea.ad.utils.CommonUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Component("indexSender")
+@Component
 public class IndexSender implements ISender {
     @Override
     public void sender(MysqlRowData mysqlRowData) {

@@ -1,0 +1,35 @@
+spring:
+  profiles:
+    active: dev
+  jpa:
+    open-in-view: false
+  datasource:
+    url: jdbc:mysql://192.168.150.101:3306/example?autoReconnect=true&useUnicode=true&characterEncoding=utf8&useSSL=false
+    username: root
+    password: 301123gsw
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    tomcat:
+      max-active: 4
+      min-idle: 2
+      initial-size: 2
+
+---
+spring:
+  profiles: dev
+
+server:
+  port: 8080
+
+---
+spring:
+  profiles: test
+
+server:
+  port: 8081
+
+---
+spring:
+  profiles: prod
+
+server:
+  port: 8082
